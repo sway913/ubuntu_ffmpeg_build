@@ -7,29 +7,36 @@
 set -e
 
 PATH=$PATH:$PREFIX/lib # 设置环境变量，将$PREFIX/bin目录下的可执行二进制文件设置进去，方便调用
+#ffmpeg install path
+export PREFIX_FF=$PREFIX/ffmpeg
 
 PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
 export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH
 
 FFMPEG="FFmpeg"
 
+ADDI_CFLAGS=" "
+ADDI_LDFLAGS=" "
+
 # 通用配置
 COMMON_FFMPEG_CONFIGURE_COMMAND="./configure
---prefix=$PREFIX
---extra-cflags=-I$PREFIX/include
---extra-ldflags=-L$PREFIX/lib
+--prefix=$PREFIX_FF
 --pkg-config-flags="--static"
 --extra-libs="-lpthread"
+--disable-doc
+--disable-sdl2
+--disable-avdevice
 --enable-ffplay
 --enable-gpl
 --enable-version3
 --disable-optimizations
---enable-debug
+--disable-debug
+--enable-pic
 --enable-nonfree
 --enable-filter=delogo
 "
 
-if [[ "$enableShared" == true  ]]; then
+if [[ "$enableSharedFFmpeg" == true  ]]; then
  COMMON_FFMPEG_CONFIGURE_COMMAND=$COMMON_FFMPEG_CONFIGURE_COMMAND"
  --enable-shared
  --disable-static
@@ -40,6 +47,11 @@ else
  --disable-shared
  "
 fi
+
+ COMMON_FFMPEG_CONFIGURE_COMMAND=$COMMON_FFMPEG_CONFIGURE_COMMAND"
+ --extra-cflags=-I$PREFIX/include  $ADDI_CFLAGS
+ --extra-ldflags=-L$PREFIX/lib  $ADDI_LDFLAGS
+ "
 
 # linux配置
 LINUX_FFMPEG_CONFIGURE_COMMAND=$COMMON_FFMPEG_CONFIGURE_COMMAND"
@@ -84,4 +96,6 @@ if [ -e $FFMPEG ]; then
  make -j${cpu_num}
  make install
 fi
+
+
 echo "==========================ffmpeg build successful!=========================="

@@ -19,6 +19,7 @@ else
  LAME_CONFIGURE_COMMAND=$LAME_CONFIGURE_COMMAND"
  --enable-static
  --disable-shared
+ --with-pic 
  "
 fi
 
@@ -31,21 +32,26 @@ if [ ! -e $LAME"-"$LAME_VERSION".tar.gz" ]; then
  fi
 fi
  
-echo "==========================unzip lame=========================="
-if [ -e $LAME"-"$LAME_VERSION".tar.gz" ]; then
- if [ -e $LAME"-"$LAME_VERSION ]; then
-  rm -rf $LAME"-"$LAME_VERSION
- fi
- tar zxvf $LAME"-"$LAME_VERSION".tar.gz"
+if [ ! -d "$LAME"-"$LAME_VERSION" ]; then
+       echo "==========================unzip lame=========================="
+       if [ -e $LAME"-"$LAME_VERSION".tar.gz" ]; then
+       if [ -e $LAME"-"$LAME_VERSION ]; then
+       rm -rf $LAME"-"$LAME_VERSION
+       fi
+       tar zxvf $LAME"-"$LAME_VERSION".tar.gz"
+       fi
 fi
 
 echo "==========================build lame=========================="
 if [ -e $LAME"-"$LAME_VERSION ]; then
  cd $LAME"-"$LAME_VERSION
- $LAME_CONFIGURE_COMMAND
- make clean
- make -j${cpu_num}
- make install
+ #rebuild
+ if [[ "$reBuildDeps" == true  ]]; then
+        $LAME_CONFIGURE_COMMAND
+        make clean
+        make -j${cpu_num}
+        make install
+ fi
 fi
 cd $MY_DIR
 echo "==========================lame build successful!=========================="

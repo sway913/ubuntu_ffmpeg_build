@@ -23,9 +23,13 @@ if [ -e $X265 ]; then
  else
   switchStatus=off
  fi
- cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=$PREFIX -DENABLE_SHARED=$switchStatus ../../source
- make -j${cpu_num}
- make install
+#rebuild
+ if [[ "$reBuildDeps" == true  ]]; then
+    cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=$PREFIX -DENABLE_SHARED=$switchStatus ../../source
+    make -j${cpu_num}
+    make install
+ fi
+ 
 fi
 cd $MY_DIR
 echo "==========================x265 build successful!=========================="

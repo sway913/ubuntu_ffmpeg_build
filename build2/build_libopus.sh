@@ -19,6 +19,7 @@ else
  OPUS_CONFIGURE_COMMAND=$OPUS_CONFIGURE_COMMAND"
  --enable-static
  --disable-shared
+ --with-pic 
  "
 fi
 
@@ -31,21 +32,26 @@ if [ ! -e $OPUS"-"$OPUS_VERSION".tar.gz" ]; then
  fi
 fi
  
-echo "==========================unzip libopus=========================="
-if [ -e $OPUS"-"$OPUS_VERSION".tar.gz" ]; then
- if [ -e $OPUS"-"$OPUS_VERSION ]; then
-  rm -rf $OPUS"-"$OPUS_VERSION
- fi
- tar zxvf $OPUS"-"$OPUS_VERSION".tar.gz"
+if [ ! -d "$OPUS"-"$OPUS_VERSION" ]; then
+       echo "==========================unzip libopus=========================="
+       if [ -e $OPUS"-"$OPUS_VERSION".tar.gz" ]; then
+       if [ -e $OPUS"-"$OPUS_VERSION ]; then
+       rm -rf $OPUS"-"$OPUS_VERSION
+       fi
+       tar zxvf $OPUS"-"$OPUS_VERSION".tar.gz"
+       fi
 fi
 
 echo "==========================build libopus=========================="
 if [ -e $OPUS"-"$OPUS_VERSION ]; then
  cd $OPUS"-"$OPUS_VERSION
- $OPUS_CONFIGURE_COMMAND
- make clean
- make -j${cpu_num}
- make install
+ #rebuild
+ if [[ "$reBuildDeps" == true  ]]; then
+        $OPUS_CONFIGURE_COMMAND
+        make clean
+        make -j${cpu_num}
+        make install
+ fi
 fi
 cd $MY_DIR
 echo "==========================libopus build successful!=========================="

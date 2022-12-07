@@ -17,7 +17,8 @@ if [[ "$enableShared" == true  ]]; then
 else
  FDK_AAC_CONFIGURE_COMMAND=$FDK_AAC_CONFIGURE_COMMAND"
  --enable-static
- --disable-shared
+ --disable-shared 
+ --with-pic 
  "
 fi
 
@@ -30,21 +31,26 @@ if [ ! -e $FDK_AAC"-"$FDK_AAC_VERSION".tar.gz" ]; then
  fi
 fi
  
-echo "==========================unzip fdk-aac=========================="
-if [ -e $FDK_AAC"-"$FDK_AAC_VERSION".tar.gz" ]; then
- if [ -e $FDK_AAC"-"$FDK_AAC_VERSION ]; then
-  rm -rf $FDK_AAC"-"$FDK_AAC_VERSION
- fi
- tar zxvf $FDK_AAC"-"$FDK_AAC_VERSION".tar.gz"
+if [ ! -d "$FDK_AAC"-"$FDK_AAC_VERSION" ]; then
+       echo "==========================unzip fdk-aac=========================="
+       if [ -e $FDK_AAC"-"$FDK_AAC_VERSION".tar.gz" ]; then
+       if [ -e $FDK_AAC"-"$FDK_AAC_VERSION ]; then
+       rm -rf $FDK_AAC"-"$FDK_AAC_VERSION
+       fi
+       tar zxvf $FDK_AAC"-"$FDK_AAC_VERSION".tar.gz"
+       fi
 fi
 
 echo "==========================build fdk_aac=========================="
 if [ -e $FDK_AAC"-"$FDK_AAC_VERSION ]; then
  cd $FDK_AAC"-"$FDK_AAC_VERSION
- $FDK_AAC_CONFIGURE_COMMAND
- make clean
- make -j${cpu_num}
- make install
+ #rebuild
+ if [[ "$reBuildDeps" == true  ]]; then
+        $FDK_AAC_CONFIGURE_COMMAND
+        make clean
+        make -j${cpu_num}
+        make install
+ fi
 fi
 cd $MY_DIR
 echo "==========================fdk_aac build successful!=========================="

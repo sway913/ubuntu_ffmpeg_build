@@ -29,21 +29,26 @@ if [ ! -e $PKG_CONFIG"-"$PKG_CONFIG_VERSION".tar.gz" ]; then
  fi
 fi
  
-echo "==========================unzip pkg-config=========================="
-if [ -e $PKG_CONFIG"-"$PKG_CONFIG_VERSION".tar.gz" ]; then
- if [ -e $PKG_CONFIG"-"$PKG_CONFIG_VERSION ]; then
-  rm -rf $PKG_CONFIG"-"$PKG_CONFIG_VERSION
- fi
- tar zxvf $PKG_CONFIG"-"$PKG_CONFIG_VERSION".tar.gz"
+if [ ! -d "$PKG_CONFIG"-"$PKG_CONFIG_VERSION" ]; then
+       echo "==========================unzip pkg-config=========================="
+       if [ -e $PKG_CONFIG"-"$PKG_CONFIG_VERSION".tar.gz" ]; then
+       if [ -e $PKG_CONFIG"-"$PKG_CONFIG_VERSION ]; then
+       rm -rf $PKG_CONFIG"-"$PKG_CONFIG_VERSION
+       fi
+       tar zxvf $PKG_CONFIG"-"$PKG_CONFIG_VERSION".tar.gz"
+       fi
 fi
 
 echo "==========================build pkg-config=========================="
 if [ -e $PKG_CONFIG"-"$PKG_CONFIG_VERSION ]; then
  cd $PKG_CONFIG"-"$PKG_CONFIG_VERSION
- $PKG_CONFIG_CONFIGURE_COMMAND
- make clean
- make -j${cpu_num}
- make install
+ #rebuild
+ if [[ "$reBuildDeps" == true  ]]; then
+        $PKG_CONFIG_CONFIGURE_COMMAND
+        make clean
+        make -j${cpu_num}
+        make install
+ fi
 fi
 cd $MY_DIR
 echo "==========================pkg-config build successful!=========================="

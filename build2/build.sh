@@ -25,22 +25,27 @@ set -e
 source ./tools.sh
 source ./config.sh
 
+
+echo "--------reBuildDeps=$reBuildDeps   enableShared=$enableShared   enableSharedFFmpeg=$enableSharedFFmpeg   -------------"
+
 cd $MY_DIR
 
 startTime=`date +%Y%m%d-%H:%M:%S`
 startTime_s=`date +%s`
 
 if [ -e "output" ]; then
- rm -rf output
+ if [[ "$reBuildDeps" == true  ]]; then
+    rm -rf output
+    mkdir output
+    mkdir output/bin
+ fi
 fi
-mkdir output
-mkdir output/bin
 
 . build_pkg_config.sh
 . build_libfdk_aac.sh
 . build_libmp3lame.sh
 . build_libopus.sh
-. build_sdl2.sh
+# . build_sdl2.sh
 . build_yasm.sh
 . build_libvpx.sh
 . build_libx264.sh
@@ -59,9 +64,11 @@ echo "==========================test ffmpeg!=========================="
 
 if [[ "$enableShared" == true  ]]; then
  export LD_LIBRARY_PATH=$MY_DIR/output/lib/
+ cp -f ${PREFIX_FF}/bin/* $MY_DIR/output/bin
  cd $MY_DIR/output/bin
  ./ffmpeg -version
 else
+ cp -f ${PREFIX_FF}/bin/* $MY_DIR/output/bin
  cd $MY_DIR/output/bin
  ./ffmpeg -version
 fi

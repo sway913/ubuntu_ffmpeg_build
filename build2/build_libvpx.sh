@@ -28,7 +28,7 @@ if [[ "$enableShared" == true  ]]; then
 else
  LIBVPX_CONFIGURE_COMMAND=$LIBVPX_CONFIGURE_COMMAND"
  --enable-static
- --disable-shared
+ --disable-shared --enable-pic
  "
 fi
 
@@ -41,21 +41,26 @@ if [ ! -e $LIBVPX"-"$LIBVPX_VERSION".tar.gz" ]; then
  fi
 fi
  
-echo "==========================unzip libvpx=========================="
-if [ -e $LIBVPX"-"$LIBVPX_VERSION".tar.gz" ]; then
- if [ -e $LIBVPX"-"$LIBVPX_VERSION ]; then
-  rm -rf $LIBVPX"-"$LIBVPX_VERSION
- fi
- tar zxvf $LIBVPX"-"$LIBVPX_VERSION".tar.gz"
+if [ ! -d "$LIBVPX"-"$LIBVPX_VERSION" ]; then
+       echo "==========================unzip libvpx=========================="
+       if [ -e $LIBVPX"-"$LIBVPX_VERSION".tar.gz" ]; then
+       if [ -e $LIBVPX"-"$LIBVPX_VERSION ]; then
+       rm -rf $LIBVPX"-"$LIBVPX_VERSION
+       fi
+       tar zxvf $LIBVPX"-"$LIBVPX_VERSION".tar.gz"
+       fi
 fi
 
 echo "==========================build libvpx=========================="
 if [ -e $LIBVPX"-"$LIBVPX_VERSION ]; then
  cd $LIBVPX"-"$LIBVPX_VERSION
- $LIBVPX_CONFIGURE_COMMAND
- make clean
- make -j${cpu_num}
- make install
+ #rebuild
+ if [[ "$reBuildDeps" == true  ]]; then
+        $LIBVPX_CONFIGURE_COMMAND
+        make clean
+        make -j${cpu_num}
+        make install
+ fi
 fi
 cd $MY_DIR
 echo "==========================libvpx build successful!=========================="

@@ -12,11 +12,11 @@ X264_CONFIGURE_COMMAND="./configure
 
 if [[ "$enableShared" == true  ]]; then
  X264_CONFIGURE_COMMAND=$X264_CONFIGURE_COMMAND"
- --enable-shared
+ --enable-shared --enable-pic
  "
 else
  X264_CONFIGURE_COMMAND=$X264_CONFIGURE_COMMAND"
- --enable-static
+ --enable-static --enable-pic
  "
 fi
 
@@ -30,10 +30,13 @@ fi
 echo "==========================build x264=========================="
 if [ -e $X264 ]; then
  cd $X264
- $X264_CONFIGURE_COMMAND
- make clean
- make -j${cpu_num}
- make install
+ #rebuild
+ if [[ "$reBuildDeps" == true  ]]; then
+        $X264_CONFIGURE_COMMAND
+        make clean
+        make -j${cpu_num}
+        make install
+ fi
 fi
 cd $MY_DIR
 echo "==========================x264 build successful!=========================="

@@ -30,21 +30,26 @@ if [ ! -e $SDL2"-"$SDL2_VERSION".tar.gz" ]; then
  fi
 fi
  
-echo "==========================unzip SDL2=========================="
-if [ -e $SDL2"-"$SDL2_VERSION".tar.gz" ]; then
- if [ -e $SDL2"-"$SDL2_VERSION ]; then
-  rm -rf $SDL2"-"$SDL2_VERSION
- fi
- tar zxvf $SDL2"-"$SDL2_VERSION".tar.gz"
+if [ ! -d "$SDL2"-"$SDL2_VERSION" ]; then
+       echo "==========================unzip SDL2=========================="
+       if [ -e $SDL2"-"$SDL2_VERSION".tar.gz" ]; then
+       if [ -e $SDL2"-"$SDL2_VERSION ]; then
+       rm -rf $SDL2"-"$SDL2_VERSION
+       fi
+       tar zxvf $SDL2"-"$SDL2_VERSION".tar.gz"
+       fi
 fi
 
 echo "==========================build SDL2=========================="
 if [ -e $SDL2"-"$SDL2_VERSION ]; then
  cd $SDL2"-"$SDL2_VERSION
- $SDL2_CONFIGURE_COMMAND
- make clean
- make -j${cpu_num}
- make install
+ #rebuild
+ if [[ "$reBuildDeps" == true  ]]; then
+        $SDL2_CONFIGURE_COMMAND
+        make clean
+        make -j${cpu_num}
+        make install
+ fi
 fi
 cd $MY_DIR
 echo "==========================SDL2 build successful!=========================="

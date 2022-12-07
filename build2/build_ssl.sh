@@ -15,11 +15,11 @@ LIBOPENSSL_CONFIGURE_COMMAND="./config
 
 if [[ "$enableShared" == true  ]]; then
  LIBOPENSSL_CONFIGURE_COMMAND=$LIBOPENSSL_CONFIGURE_COMMAND"
-
+ shared
  "
 else
  LIBOPENSSL_CONFIGURE_COMMAND=$LIBOPENSSL_CONFIGURE_COMMAND"
- no-shared 
+ no-shared  -fPIC 
  "
 fi
 
@@ -32,21 +32,26 @@ if [ ! -e $LIBOPENSSL"-"$LIBOPENSSL_VERSION".tar.gz" ]; then
  fi
 fi
  
-echo "==========================unzip libopenssl=========================="
-if [ -e $LIBOPENSSL"-"$LIBOPENSSL_VERSION".tar.gz" ]; then
- if [ -e $LIBOPENSSL"-"$LIBOPENSSL_VERSION ]; then
-  rm -rf $LIBOPENSSL"-"$LIBOPENSSL_VERSION
- fi
- tar zxvf $LIBOPENSSL"-"$LIBOPENSSL_VERSION".tar.gz"
+if [ ! -d "$LIBOPENSSL"-"$LIBOPENSSL_VERSION" ]; then
+    echo "==========================unzip libopenssl======================"
+    if [ -e $LIBOPENSSL"-"$LIBOPENSSL_VERSION".tar.gz" ]; then
+    if [ -e $LIBOPENSSL"-"$LIBOPENSSL_VERSION ]; then
+    rm -rf $LIBOPENSSL"-"$LIBOPENSSL_VERSION
+    fi
+     tar zxvf $LIBOPENSSL"-"$LIBOPENSSL_VERSION".tar.gz"
+    fi
 fi
 
 echo "==========================build libopenssl=========================="
 if [ -e $LIBOPENSSL"-"$LIBOPENSSL_VERSION ]; then
  cd $LIBOPENSSL"-"$LIBOPENSSL_VERSION
- $LIBOPENSSL_CONFIGURE_COMMAND
- make clean
- make -j${cpu_num}
- make install
+ #rebuild
+ if [[ "$reBuildDeps" == true  ]]; then
+        $LIBOPENSSL_CONFIGURE_COMMAND
+        make clean
+        make -j${cpu_num}
+        make install
+ fi
 fi
 cd $MY_DIR
 echo "==========================libopenssl build successful!=========================="
